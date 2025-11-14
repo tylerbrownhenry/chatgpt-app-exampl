@@ -5,6 +5,7 @@
 import { describe, test, expect } from '@jest/globals';
 import { searchStores } from '../src/server/logic/store-search.js';
 import { mockStores } from '../src/server/data/stores.js';
+import type { Store } from '../src/server/types/index.js';
 
 describe('searchStores', () => {
   test('should return all stores when no query provided', () => {

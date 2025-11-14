@@ -5,6 +5,7 @@
 import { describe, test, expect } from '@jest/globals';
 import { searchProducts } from '../src/server/logic/product-search.js';
 import { mockProducts } from '../src/server/data/products.js';
+import type { Product } from '../src/server/types/index.js';
 
 describe('searchProducts', () => {
   test('should return products matching the query by name', () => {

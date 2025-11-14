@@ -4,6 +4,7 @@
 
 import { describe, test, expect } from '@jest/globals';
 import { getStoreDetails } from '../src/server/logic/store-detail.js';
+import type { StoreDetailResult } from '../src/server/types/index.js';
 
 describe('getStoreDetails', () => {
   test('should return store and products for valid ID', () => {

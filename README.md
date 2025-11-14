@@ -1,6 +1,6 @@
 # Product Search App
 
-A ChatGPT app built with the OpenAI Apps SDK that searches for products and displays results with images, prices, and links in a beautiful grid layout.
+A ChatGPT app built with the OpenAI Apps SDK and TypeScript that searches for products and displays results with images, prices, and links in a beautiful grid layout.
 
 ## Features
 
@@ -16,6 +16,7 @@ A ChatGPT app built with the OpenAI Apps SDK that searches for products and disp
 
 - Node.js 18 or higher
 - npm or pnpm
+- TypeScript 5.3 or higher (included in dev dependencies)
 - ChatGPT account with Developer Mode enabled
 - ngrok (for local testing with ChatGPT)
 
@@ -30,6 +31,11 @@ cd chatgpt-app-exampl
 2. Install dependencies:
 ```bash
 npm install
+```
+
+3. Build the TypeScript code:
+```bash
+npm run build
 ```
 
 ## Running the App
@@ -97,8 +103,11 @@ Try these example prompts in ChatGPT:
 ## Documentation
 
 - **[README.md](README.md)** - This file, complete project overview
+- **[TYPESCRIPT.md](TYPESCRIPT.md)** - TypeScript migration guide and benefits
 - **[MCP_SETUP.md](MCP_SETUP.md)** - Detailed MCP server setup for ChatGPT Developer Mode
 - **[QUICKSTART.md](QUICKSTART.md)** - Get started in 5 minutes
+- **[TESTING.md](TESTING.md)** - Testing guide with Jest
+- **[ARCHITECTURE.md](ARCHITECTURE.md)** - Architecture documentation
 - **[.env.example](.env.example)** - Environment variable template for API keys
 
 ## Project Structure
