@@ -1,0 +1,35 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+build/
+coverage/
+assets/
+
+# TypeScript
+*.d.ts
+*.tsbuildinfo
+
+# Logs
+*.log
+npm-debug.log*
+
+# Environment
+.env
+.env.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Legacy JS files (if keeping old files temporarily)
+src/**/*.js
+!jest.config.js
+!*.config.js

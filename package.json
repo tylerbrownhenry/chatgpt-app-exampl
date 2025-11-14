@@ -13,7 +13,12 @@
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
     "test:watch": "node --experimental-vm-modules node_modules/jest/bin/jest.js --watch",
     "test:coverage": "node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint . --ext .ts,.js",
+    "lint:fix": "eslint . --ext .ts,.js --fix",
+    "lint:check": "eslint . --ext .ts,.js --max-warnings 0",
+    "format": "prettier --write \"src/**/*.ts\" \"__tests__/**/*.ts\" \"*.md\" \"*.json\"",
+    "format:check": "prettier --check \"src/**/*.ts\" \"__tests__/**/*.ts\" \"*.md\" \"*.json\""
   },
   "keywords": ["openai", "apps-sdk", "chatgpt", "product-search", "typescript"],
   "author": "",
@@ -30,6 +35,12 @@
     "@types/node": "^20.10.6",
     "tsx": "^4.7.0",
     "ts-jest": "^29.1.1",
-    "@swc/jest": "^0.2.29"
+    "@swc/jest": "^0.2.29",
+    "eslint": "^8.56.0",
+    "@typescript-eslint/parser": "^6.18.1",
+    "@typescript-eslint/eslint-plugin": "^6.18.1",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-jest": "^27.6.1",
+    "prettier": "^3.1.1"
   }
 }

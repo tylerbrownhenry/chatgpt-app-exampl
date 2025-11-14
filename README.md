@@ -38,6 +38,51 @@ npm install
 npm run build
 ```
 
+## Code Quality
+
+This project uses several tools to maintain high code quality:
+
+### Linting and Formatting
+```bash
+# Run ESLint
+npm run lint
+
+# Auto-fix linting issues
+npm run lint:fix
+
+# Format code with Prettier
+npm run format
+
+# Check formatting
+npm run format:check
+```
+
+### Type Checking
+```bash
+# Type check without building
+npm run typecheck
+```
+
+### Testing
+```bash
+# Run all tests
+npm test
+
+# Watch mode
+npm run test:watch
+
+# Coverage report
+npm run test:coverage
+```
+
+### Combined Quality Check
+```bash
+# Run all quality checks
+npm run lint:check && npm run format:check && npm run typecheck && npm test
+```
+
+See **[LINTING.md](LINTING.md)** for detailed information about code quality tools.
+
 ## Running the App
 
 ### Option 1: Using ChatGPT Desktop App with Developer Mode (Recommended)
@@ -104,6 +149,7 @@ Try these example prompts in ChatGPT:
 
 - **[README.md](README.md)** - This file, complete project overview
 - **[TYPESCRIPT.md](TYPESCRIPT.md)** - TypeScript migration guide and benefits
+- **[LINTING.md](LINTING.md)** - ESLint and Prettier setup guide
 - **[MCP_SETUP.md](MCP_SETUP.md)** - Detailed MCP server setup for ChatGPT Developer Mode
 - **[QUICKSTART.md](QUICKSTART.md)** - Get started in 5 minutes
 - **[TESTING.md](TESTING.md)** - Testing guide with Jest

@@ -1,0 +1,24 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+build/
+coverage/
+assets/
+
+# Logs
+*.log
+
+# Environment
+.env
+.env.*
+
+# Lock files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Generated files
+*.d.ts
+*.tsbuildinfo
