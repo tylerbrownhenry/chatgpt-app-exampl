@@ -1,0 +1,22 @@
+{
+  "name": "product-search-app",
+  "version": "1.0.0",
+  "description": "A ChatGPT app for searching products using an API",
+  "type": "module",
+  "scripts": {
+    "build": "node build-all.mts",
+    "serve": "npx serve assets -p 4444",
+    "dev": "vite",
+    "server:node": "node src/server/product-search-server.js"
+  },
+  "keywords": ["openai", "apps-sdk", "chatgpt", "product-search"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.4"
+  },
+  "devDependencies": {
+    "vite": "^5.0.0",
+    "serve": "^14.2.0"
+  }
+}
