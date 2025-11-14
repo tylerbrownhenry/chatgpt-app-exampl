@@ -3,7 +3,36 @@
  * Add your API keys and settings here
  */
 
-export const config = {
+interface ApiConfig {
+  amazonAccessKey?: string;
+  amazonSecretKey?: string;
+  amazonAssociateTag?: string;
+  ebayAppId?: string;
+  ebayCertId?: string;
+  apiKey?: string;
+  apiUrl?: string;
+}
+
+interface SearchConfig {
+  maxResults: number;
+  defaultQuery: string;
+}
+
+interface DisplayConfig {
+  currency: string;
+  imageWidth: number;
+  imageHeight: number;
+}
+
+interface Config {
+  serverName: string;
+  serverVersion: string;
+  api: ApiConfig;
+  search: SearchConfig;
+  display: DisplayConfig;
+}
+
+export const config: Config = {
   // Server settings
   serverName: 'product-search-server',
   serverVersion: '1.0.0',
@@ -26,7 +55,7 @@ export const config = {
 
   // Search settings
   search: {
-    maxResults: 12,  // Maximum number of products to return
+    maxResults: 12, // Maximum number of products to return
     defaultQuery: '', // Default query if none provided
   },
 
@@ -35,5 +64,5 @@ export const config = {
     currency: '$',
     imageWidth: 400,
     imageHeight: 200,
-  }
+  },
 };
