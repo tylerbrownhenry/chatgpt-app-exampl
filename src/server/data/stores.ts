@@ -7,51 +7,565 @@ import type { Store } from '../types/index.js';
 
 export const mockStores: Store[] = [
   {
-    id: 1,
-    name: "Tech Haven Electronics",
-    logo: "https://images.unsplash.com/photo-1556656793-08538906a9f8?w=200",
-    url: "https://example.com/stores/tech-haven",
-    description: "Your one-stop shop for premium electronics and accessories",
-    rating: 4.6,
-    reviews: 3421,
-    location: "123 Tech Street, Silicon Valley, CA",
-    phone: "+1 (555) 123-4567",
-    email: "contact@techhaven.com",
-    hours: "Mon-Sat: 9AM-9PM, Sun: 10AM-6PM",
-    categories: ["Audio", "Accessories", "Computers"],
-    shippingInfo: "Free shipping on orders over $50",
-    returnPolicy: "30-day return policy"
+    address1: "Beltway",
+    address2: "8727 Loch Raven Blvd",
+    beerTastingHours: {
+      hasHours: false,
+      showHours: false
+    },
+    city: "Towson",
+    displayMessage: false,
+    displaySpecialInstructions: true,
+    genericHeader: {},
+    displayWeeklyAd: false,
+    distance: 1169.32,
+    formattedDistance: "1169.32 Mi",
+    latitude: 39.39908,
+    longitude: -76.56354,
+    growler: false,
+    humidor: true,
+    classroom: false,
+    marketingStatus: "ACTIVE",
+    mapImage: "https://qa.totalwine.com/",
+    name: "Towson (Beltway)",
+    phone: "410-668-8884",
+    phoneFormatted: "(410) 668-8884",
+    title: "Liquor Store, Wine Store - Towson, MD | Total Wine & More|Total Wine & More",
+    twmMetaDescription: "Shop wines, spirits and beers at the best prices, selection and service. Buy online for home delivery or pick up in our store near you in Towson, MD. (410) 668-8884",
+    regulatoryStore: false,
+    customerServicePhone: "800-949-9892",
+    customerServicePhoneFormatted: "(800) 949-9892",
+    spiritsHours: {
+      hasHours: false,
+      showHours: false
+    },
+    spiritsTastingHours: {
+      hasHours: true,
+      showHours: true,
+      days: [
+        {
+          closedStatus: true,
+          closingTime: "12:00 AM",
+          dayOfWeek: "MONDAY",
+          openingTime: "12:00 AM"
+        },
+        {
+          closedStatus: true,
+          closingTime: "12:00 AM",
+          dayOfWeek: "TUESDAY",
+          openingTime: "12:00 AM"
+        },
+        {
+          closedStatus: true,
+          closingTime: "12:00 AM",
+          dayOfWeek: "WEDNESDAY",
+          openingTime: "12:00 AM"
+        },
+        {
+          closedStatus: true,
+          closingTime: "12:00 AM",
+          dayOfWeek: "THURSDAY",
+          openingTime: "12:00 AM"
+        },
+        {
+          closedStatus: false,
+          closingTime: "8:00 PM",
+          dayOfWeek: "FRIDAY",
+          openingTime: "12:00 PM"
+        },
+        {
+          closedStatus: false,
+          closingTime: "8:00 PM",
+          dayOfWeek: "SATURDAY",
+          openingTime: "12:00 PM"
+        },
+        {
+          closedStatus: true,
+          closingTime: "12:00 AM",
+          dayOfWeek: "SUNDAY",
+          openingTime: "12:00 AM"
+        }
+      ]
+    },
+    state: "Maryland",
+    stateShort: "MD",
+    stateIsoCode: "US-MD",
+    storeHours: {
+      hasHours: true,
+      showHours: true,
+      days: [
+        {
+          closedStatus: false,
+          closingTime: "10:00 PM",
+          dayOfWeek: "MONDAY",
+          openingTime: "8:00 AM"
+        },
+        {
+          closedStatus: false,
+          closingTime: "10:00 PM",
+          dayOfWeek: "TUESDAY",
+          openingTime: "8:00 AM"
+        },
+        {
+          closedStatus: false,
+          closingTime: "10:00 PM",
+          dayOfWeek: "WEDNESDAY",
+          openingTime: "8:00 AM"
+        },
+        {
+          closedStatus: false,
+          closingTime: "10:00 PM",
+          dayOfWeek: "THURSDAY",
+          openingTime: "8:00 AM"
+        },
+        {
+          closedStatus: false,
+          closingTime: "11:00 PM",
+          dayOfWeek: "FRIDAY",
+          openingTime: "8:00 AM"
+        },
+        {
+          closedStatus: false,
+          closingTime: "11:00 PM",
+          dayOfWeek: "SATURDAY",
+          openingTime: "8:00 AM"
+        },
+        {
+          closedStatus: true,
+          closingTime: "12:00 AM",
+          dayOfWeek: "SUNDAY",
+          openingTime: "12:00 AM"
+        }
+      ]
+    },
+    nextWeekStoreHours: {
+      hasHours: true,
+      showHours: true,
+      days: [
+        {
+          closedStatus: false,
+          closingTime: "10:00 PM",
+          dayOfWeek: "MONDAY",
+          openingTime: "8:00 AM"
+        },
+        {
+          closedStatus: false,
+          closingTime: "10:00 PM",
+          dayOfWeek: "TUESDAY",
+          openingTime: "8:00 AM"
+        },
+        {
+          closedStatus: false,
+          closingTime: "10:00 PM",
+          dayOfWeek: "WEDNESDAY",
+          openingTime: "8:00 AM"
+        },
+        {
+          closedStatus: false,
+          closingTime: "10:00 PM",
+          dayOfWeek: "THURSDAY",
+          openingTime: "8:00 AM"
+        },
+        {
+          closedStatus: false,
+          closingTime: "11:00 PM",
+          dayOfWeek: "FRIDAY",
+          openingTime: "8:00 AM"
+        },
+        {
+          closedStatus: false,
+          closingTime: "11:00 PM",
+          dayOfWeek: "SATURDAY",
+          openingTime: "8:00 AM"
+        },
+        {
+          closedStatus: true,
+          closingTime: "12:00 AM",
+          dayOfWeek: "SUNDAY",
+          openingTime: "12:00 AM"
+        }
+      ]
+    },
+    storeImages: [
+      {
+        altText: "Towson (Beltway) Storefront",
+        imageType: "DEFAULT",
+        format: "DEFAULT",
+        url: "https://qa.totalwine.com/store-images/401/storefront.jpg"
+      }
+    ],
+    storeHeaderImage: {},
+    galleryImages: [
+      {
+        altText: "Towson (Beltway) Storefront",
+        imageType: "DEFAULT",
+        format: "DEFAULT",
+        url: "https://qa.totalwine.com/store-images/401/storefront.jpg"
+      }
+    ],
+    socialMedia: [
+      {}
+    ],
+    storeNumber: "401",
+    wineTastingHours: {
+      hasHours: true,
+      showHours: true,
+      days: [
+        {
+          closedStatus: true,
+          closingTime: "12:00 AM",
+          dayOfWeek: "MONDAY",
+          openingTime: "12:00 AM"
+        },
+        {
+          closedStatus: true,
+          closingTime: "12:00 AM",
+          dayOfWeek: "TUESDAY",
+          openingTime: "12:00 AM"
+        },
+        {
+          closedStatus: true,
+          closingTime: "12:00 AM",
+          dayOfWeek: "WEDNESDAY",
+          openingTime: "12:00 AM"
+        },
+        {
+          closedStatus: true,
+          closingTime: "12:00 AM",
+          dayOfWeek: "THURSDAY",
+          openingTime: "12:00 AM"
+        },
+        {
+          closedStatus: false,
+          closingTime: "8:00 PM",
+          dayOfWeek: "FRIDAY",
+          openingTime: "12:00 PM"
+        },
+        {
+          closedStatus: false,
+          closingTime: "8:00 PM",
+          dayOfWeek: "SATURDAY",
+          openingTime: "12:00 PM"
+        },
+        {
+          closedStatus: true,
+          closingTime: "12:00 AM",
+          dayOfWeek: "SUNDAY",
+          openingTime: "12:00 AM"
+        }
+      ]
+    },
+    wifiAvailable: true,
+    zip: "21286",
+    spiritsProhibited: false,
+    hideTotalDiscovery: false,
+    deliveryEligible: true,
+    deliveryTipEligible: true,
+    timeZone: "America/New_York",
+    visitIdAmountThreshold: 1000,
+    loyaltyProgram: "ANDMORE",
+    falconLoyaltyProgram: "AndMore",
+    cmsFallbackExperience: {
+      WestburyAndMore: {
+        state: "US-NY"
+      },
+      CTAndMore: {
+        state: "US-CT"
+      },
+      WichitaAndMore: {
+        state: "US-KS"
+      },
+      OKCAndMore: {
+        state: "US-OK"
+      }
+    },
+    fulfillmentDelayShipping: false,
+    fulfillmentDelayISP: false,
+    futureDeliveryAllowed: true,
+    curbsideAvailable: true,
+    giftable: true,
+    thirdPartyPickupEligible: true,
+    serviceTypes: [
+      {
+        code: "StandardPickup",
+        orderReadyByHours: 2
+      }
+    ],
+    enableEngraving: false
   },
   {
-    id: 2,
-    name: "Smart Gadgets Pro",
-    logo: "https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=200",
-    url: "https://example.com/stores/smart-gadgets",
-    description: "Premium smart devices and wearables",
-    rating: 4.8,
-    reviews: 2156,
-    location: "456 Innovation Ave, Austin, TX",
-    phone: "+1 (555) 987-6543",
-    email: "support@smartgadgets.com",
-    hours: "Mon-Fri: 10AM-8PM, Sat-Sun: 11AM-7PM",
-    categories: ["Wearables", "Smart Home", "Cameras"],
-    shippingInfo: "Same-day delivery available in metro area",
-    returnPolicy: "45-day return policy with warranty"
-  },
-  {
-    id: 3,
-    name: "Gaming Central",
-    logo: "https://images.unsplash.com/photo-1511512578047-dfb367046420?w=200",
-    url: "https://example.com/stores/gaming-central",
-    description: "Professional gaming gear and peripherals",
-    rating: 4.7,
-    reviews: 4532,
-    location: "789 Gamer Road, Seattle, WA",
-    phone: "+1 (555) 456-7890",
-    email: "info@gamingcentral.com",
-    hours: "Mon-Thu: 11AM-10PM, Fri-Sat: 11AM-11PM, Sun: 12PM-8PM",
-    categories: ["Peripherals", "Gaming Chairs", "Monitors"],
-    shippingInfo: "Express shipping available",
-    returnPolicy: "60-day return policy for members"
+    address1: "Laurel Corridor",
+    address2: "3335 Corridor Marketplace",
+    beerTastingHours: {
+      hasHours: false,
+      showHours: false
+    },
+    city: "Laurel",
+    displayMessage: false,
+    displaySpecialInstructions: true,
+    genericHeader: {},
+    displayWeeklyAd: false,
+    distance: 1159.61,
+    formattedDistance: "1159.61 Mi",
+    latitude: 39.09639,
+    longitude: -76.80893,
+    growler: false,
+    humidor: true,
+    classroom: false,
+    marketingStatus: "ACTIVE",
+    mapImage: "https://qa.totalwine.com/",
+    name: "Laurel (Corridor)",
+    phone: "301-617-8507",
+    phoneFormatted: "(301) 617-8507",
+    title: "Liquor Store, Wine Store - Laurel, MD | Total Wine & More|Total Wine & More",
+    twmMetaDescription: "Shop wines, spirits and beers at the best prices, selection and service. Buy online for home delivery or pick up in our store near you in Laurel, MD. (301) 617-8507",
+    regulatoryStore: false,
+    customerServicePhone: "800-949-9892",
+    customerServicePhoneFormatted: "(800) 949-9892",
+    spiritsHours: {
+      hasHours: false,
+      showHours: false
+    },
+    spiritsTastingHours: {
+      hasHours: true,
+      showHours: true,
+      days: [
+        {
+          closedStatus: false,
+          closingTime: "6:00 PM",
+          dayOfWeek: "MONDAY",
+          openingTime: "11:00 AM"
+        },
+        {
+          closedStatus: false,
+          closingTime: "6:00 PM",
+          dayOfWeek: "TUESDAY",
+          openingTime: "11:00 AM"
+        },
+        {
+          closedStatus: false,
+          closingTime: "6:00 PM",
+          dayOfWeek: "WEDNESDAY",
+          openingTime: "11:00 AM"
+        },
+        {
+          closedStatus: false,
+          closingTime: "6:00 PM",
+          dayOfWeek: "THURSDAY",
+          openingTime: "11:00 AM"
+        },
+        {
+          closedStatus: false,
+          closingTime: "7:00 PM",
+          dayOfWeek: "FRIDAY",
+          openingTime: "11:00 AM"
+        },
+        {
+          closedStatus: false,
+          closingTime: "8:00 PM",
+          dayOfWeek: "SATURDAY",
+          openingTime: "11:00 AM"
+        },
+        {
+          closedStatus: false,
+          closingTime: "7:00 PM",
+          dayOfWeek: "SUNDAY",
+          openingTime: "12:00 PM"
+        }
+      ]
+    },
+    state: "Maryland",
+    stateShort: "MD",
+    stateIsoCode: "US-MD",
+    storeHours: {
+      hasHours: true,
+      showHours: true,
+      days: [
+        {
+          closedStatus: false,
+          closingTime: "10:00 PM",
+          dayOfWeek: "MONDAY",
+          openingTime: "8:00 AM"
+        },
+        {
+          closedStatus: false,
+          closingTime: "10:00 PM",
+          dayOfWeek: "TUESDAY",
+          openingTime: "8:00 AM"
+        },
+        {
+          closedStatus: false,
+          closingTime: "10:00 PM",
+          dayOfWeek: "WEDNESDAY",
+          openingTime: "8:00 AM"
+        },
+        {
+          closedStatus: false,
+          closingTime: "11:00 PM",
+          dayOfWeek: "THURSDAY",
+          openingTime: "8:00 AM"
+        },
+        {
+          closedStatus: false,
+          closingTime: "11:00 PM",
+          dayOfWeek: "FRIDAY",
+          openingTime: "8:00 AM"
+        },
+        {
+          closedStatus: false,
+          closingTime: "11:00 PM",
+          dayOfWeek: "SATURDAY",
+          openingTime: "8:00 AM"
+        },
+        {
+          closedStatus: false,
+          closingTime: "9:00 PM",
+          dayOfWeek: "SUNDAY",
+          openingTime: "8:00 AM"
+        }
+      ]
+    },
+    nextWeekStoreHours: {
+      hasHours: true,
+      showHours: true,
+      days: [
+        {
+          closedStatus: false,
+          closingTime: "10:00 PM",
+          dayOfWeek: "MONDAY",
+          openingTime: "8:00 AM"
+        },
+        {
+          closedStatus: false,
+          closingTime: "10:00 PM",
+          dayOfWeek: "TUESDAY",
+          openingTime: "8:00 AM"
+        },
+        {
+          closedStatus: false,
+          closingTime: "10:00 PM",
+          dayOfWeek: "WEDNESDAY",
+          openingTime: "8:00 AM"
+        },
+        {
+          closedStatus: false,
+          closingTime: "11:00 PM",
+          dayOfWeek: "THURSDAY",
+          openingTime: "8:00 AM"
+        },
+        {
+          closedStatus: false,
+          closingTime: "11:00 PM",
+          dayOfWeek: "FRIDAY",
+          openingTime: "8:00 AM"
+        },
+        {
+          closedStatus: false,
+          closingTime: "11:00 PM",
+          dayOfWeek: "SATURDAY",
+          openingTime: "8:00 AM"
+        },
+        {
+          closedStatus: false,
+          closingTime: "9:00 PM",
+          dayOfWeek: "SUNDAY",
+          openingTime: "8:00 AM"
+        }
+      ]
+    },
+    storeHeaderImage: {},
+    socialMedia: [
+      {}
+    ],
+    storeNumber: "402",
+    wineTastingHours: {
+      hasHours: true,
+      showHours: true,
+      days: [
+        {
+          closedStatus: false,
+          closingTime: "6:00 PM",
+          dayOfWeek: "MONDAY",
+          openingTime: "11:00 AM"
+        },
+        {
+          closedStatus: false,
+          closingTime: "6:00 PM",
+          dayOfWeek: "TUESDAY",
+          openingTime: "11:00 AM"
+        },
+        {
+          closedStatus: false,
+          closingTime: "6:00 PM",
+          dayOfWeek: "WEDNESDAY",
+          openingTime: "11:00 AM"
+        },
+        {
+          closedStatus: false,
+          closingTime: "6:00 PM",
+          dayOfWeek: "THURSDAY",
+          openingTime: "11:00 AM"
+        },
+        {
+          closedStatus: false,
+          closingTime: "7:00 PM",
+          dayOfWeek: "FRIDAY",
+          openingTime: "11:00 AM"
+        },
+        {
+          closedStatus: false,
+          closingTime: "8:00 PM",
+          dayOfWeek: "SATURDAY",
+          openingTime: "11:00 AM"
+        },
+        {
+          closedStatus: false,
+          closingTime: "7:00 PM",
+          dayOfWeek: "SUNDAY",
+          openingTime: "12:00 PM"
+        }
+      ]
+    },
+    wifiAvailable: true,
+    zip: "20724",
+    spiritsProhibited: false,
+    hideTotalDiscovery: false,
+    deliveryEligible: true,
+    deliveryTipEligible: true,
+    timeZone: "America/New_York",
+    visitIdAmountThreshold: 1000,
+    loyaltyProgram: "ANDMORE",
+    falconLoyaltyProgram: "AndMore",
+    cmsFallbackExperience: {
+      WestburyAndMore: {
+        state: "US-NY"
+      },
+      CTAndMore: {
+        state: "US-CT"
+      },
+      WichitaAndMore: {
+        state: "US-KS"
+      },
+      OKCAndMore: {
+        state: "US-OK"
+      }
+    },
+    fulfillmentDelayShipping: false,
+    fulfillmentDelayISP: false,
+    futureDeliveryAllowed: true,
+    curbsideAvailable: true,
+    giftable: true,
+    thirdPartyPickupEligible: true,
+    serviceTypes: [
+      {
+        code: "StandardPickup",
+        orderReadyByHours: 2
+      },
+      {
+        code: "ExpressPickup1Hr",
+        orderReadyByHours: 2
+      }
+    ],
+    enableEngraving: false
   }
 ];

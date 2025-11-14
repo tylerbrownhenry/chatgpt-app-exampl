@@ -30,7 +30,9 @@ export function getProductDetail(productId: number | string | null | undefined):
   }
 
   // Get the store information
-  const store = mockStores.find(s => s.id === product.storeId);
+  // Note: Currently products have storeId (1,2,3) but stores have storeNumber ("401", "402")
+  // For now, return the first store as a fallback
+  const store = mockStores[0];
 
   return { product, store };
 }

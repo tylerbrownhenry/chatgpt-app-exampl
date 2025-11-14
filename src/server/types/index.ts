@@ -192,23 +192,103 @@ export interface Product {
 }
 
 /**
+ * Store hours for a specific day
+ */
+export interface StoreHoursDay {
+  closedStatus: boolean;
+  closingTime: string;
+  dayOfWeek: string;
+  openingTime: string;
+}
+
+/**
+ * Store hours structure
+ */
+export interface StoreHours {
+  hasHours: boolean;
+  showHours: boolean;
+  days?: StoreHoursDay[];
+}
+
+/**
+ * Store image
+ */
+export interface StoreImage {
+  altText: string;
+  imageType: string;
+  format: string;
+  url: string;
+}
+
+/**
+ * Service type
+ */
+export interface ServiceType {
+  code: string;
+  orderReadyByHours: number;
+}
+
+/**
  * Store interface
  */
 export interface Store {
-  id: number;
+  address1: string;
+  address2: string;
+  beerTastingHours: StoreHours;
+  city: string;
+  displayMessage: boolean;
+  displaySpecialInstructions: boolean;
+  genericHeader: Record<string, any>;
+  displayWeeklyAd: boolean;
+  distance: number;
+  formattedDistance: string;
+  latitude: number;
+  longitude: number;
+  growler: boolean;
+  humidor: boolean;
+  classroom: boolean;
+  marketingStatus: string;
+  mapImage: string;
   name: string;
-  logo: string;
-  url: string;
-  description: string;
-  rating: number;
-  reviews: number;
-  location: string;
   phone: string;
-  email: string;
-  hours: string;
-  categories: string[];
-  shippingInfo: string;
-  returnPolicy: string;
+  phoneFormatted: string;
+  title: string;
+  twmMetaDescription: string;
+  regulatoryStore: boolean;
+  customerServicePhone: string;
+  customerServicePhoneFormatted: string;
+  spiritsHours: StoreHours;
+  spiritsTastingHours: StoreHours;
+  state: string;
+  stateShort: string;
+  stateIsoCode: string;
+  storeHours: StoreHours;
+  nextWeekStoreHours: StoreHours;
+  storeImages?: StoreImage[];
+  storeHeaderImage: Record<string, any>;
+  galleryImages?: StoreImage[];
+  socialMedia: Record<string, any>[];
+  storeNumber: string;
+  wineTastingHours: StoreHours;
+  wifiAvailable: boolean;
+  zip: string;
+  spiritsProhibited: boolean;
+  hideTotalDiscovery: boolean;
+  deliveryEligible: boolean;
+  deliveryTipEligible: boolean;
+  timeZone: string;
+  visitIdAmountThreshold: number;
+  loyaltyProgram: string;
+  falconLoyaltyProgram: string;
+  cmsFallbackExperience: Record<string, any>;
+  fulfillmentDelayShipping: boolean;
+  fulfillmentDelayISP: boolean;
+  futureDeliveryAllowed: boolean;
+  curbsideAvailable: boolean;
+  giftable: boolean;
+  thirdPartyPickupEligible: boolean;
+  serviceTypes: ServiceType[];
+  enableEngraving: boolean;
 }
 
 /**
@@ -217,6 +297,53 @@ export interface Store {
 export interface ProductDetailResult {
   product: Product;
   store: Store | undefined;
+}
+
+/**
+ * Geolocation information
+ */
+export interface Geolocation {
+  latitude: number;
+  longitude: number;
+  state: string;
+  stateIsoCode: string;
+}
+
+/**
+ * State count information
+ */
+export interface StateCount {
+  stateIsoCode: string;
+  state: string;
+  count: number;
+  selected?: boolean;
+}
+
+/**
+ * Store search metadata
+ */
+export interface StoreSearchMetadata {
+  geolocation: Geolocation;
+  states: StateCount[];
+}
+
+/**
+ * Store search pagination
+ */
+export interface StoreSearchPagination {
+  currentPage: number;
+  pageSize: number;
+  totalPages: number;
+  totalResults: number;
+}
+
+/**
+ * Store search result
+ */
+export interface StoreSearchResult {
+  pagination: StoreSearchPagination;
+  metadata: StoreSearchMetadata;
+  stores: Store[];
 }
 
 /**

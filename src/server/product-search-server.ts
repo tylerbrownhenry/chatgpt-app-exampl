@@ -16,7 +16,30 @@ import { searchProducts } from './logic/product-search.js';
 import { searchStores } from './logic/store-search.js';
 import { getProductDetail } from './logic/product-detail.js';
 import { getStoreDetails } from './logic/store-detail.js';
-import type { Product, Store } from './types/index.js';
+import { mockStores } from './data/stores.js';
+import type { Product, Store, StoreHours } from './types/index.js';
+
+/**
+ * Helper function to format store hours for display
+ */
+function formatStoreHours(hours: StoreHours): string {
+  if (!hours.showHours || !hours.days || hours.days.length === 0) {
+    return 'Hours not available';
+  }
+  
+  const today = new Date().toLocaleString('en-US', { weekday: 'long' }).toUpperCase();
+  const todayHours = hours.days.find(d => d.dayOfWeek === today);
+  
+  if (!todayHours) {
+    return 'Hours not available';
+  }
+  
+  if (todayHours.closedStatus) {
+    return 'Closed today';
+  }
+  
+  return `${todayHours.openingTime} - ${todayHours.closingTime}`;
+}
 
 /**
  * Widget definitions following OpenAI Apps SDK pattern
@@ -236,23 +259,21 @@ function generateStoresWidget(stores: Store[]): string {
     .map(
       store => `
     <div class="store-card">
-      <img src="${store.logo}" alt="${store.name}" class="store-logo">
       <div class="store-info">
         <h3 class="store-name">${store.name}</h3>
-        <div class="store-rating">
-          <span class="stars">${'★'.repeat(Math.floor(store.rating))}${'☆'.repeat(5 - Math.floor(store.rating))}</span>
-          <span class="rating-text">${store.rating} (${store.reviews} reviews)</span>
-        </div>
-        <p class="store-description">${store.description}</p>
+        <p class="store-number">Store #${store.storeNumber}</p>
         <div class="store-details">
-          <p><strong>📍</strong> ${store.location}</p>
-          <p><strong>📞</strong> ${store.phone}</p>
-          <p><strong>🕒</strong> ${store.hours}</p>
+          <p><strong>📍</strong> ${store.address2}, ${store.city}, ${store.stateShort} ${store.zip}</p>
+          <p><strong>📞</strong> ${store.phoneFormatted}</p>
+          <p><strong>🕒</strong> ${formatStoreHours(store.storeHours)}</p>
+          <p><strong>📏</strong> ${store.formattedDistance}</p>
         </div>
-        <div class="store-categories">
-          ${store.categories.map(cat => `<span class="category-badge">${cat}</span>`).join('')}
+        <div class="store-features">
+          ${store.deliveryEligible ? '<span class="feature-badge">🚚 Delivery</span>' : ''}
+          ${store.curbsideAvailable ? '<span class="feature-badge">🚗 Curbside</span>' : ''}
+          ${store.wifiAvailable ? '<span class="feature-badge">📶 WiFi</span>' : ''}
+          ${store.humidor ? '<span class="feature-badge">🔥 Humidor</span>' : ''}
         </div>
-        <a href="${store.url}" target="_blank" class="store-link">Visit Store</a>
       </div>
     </div>
   `
@@ -459,7 +480,7 @@ function generateProductDetailWidget(product: Product, store: Store | undefined)
       height: 400px;
       object-fit: cover;
       border-radius: 12px;
-      background: #e5e7eb;
+      background: #e5e7peb;
     }
 
     .product-main-info h1 {
@@ -639,7 +660,6 @@ function generateProductDetailWidget(product: Product, store: Store | undefined)
         <p class="product-description-full">${product.description}</p>
         <div class="product-actions">
           <a href="${product.url}" target="_blank" class="btn btn-primary">Buy Now</a>
-          <a href="${store?.url || '#'}" target="_blank" class="btn btn-secondary">Visit Store</a>
         </div>
       </div>
     </div>
@@ -653,10 +673,10 @@ function generateProductDetailWidget(product: Product, store: Store | undefined)
       store
         ? `
     <div class="store-info">
-      <h3>Sold by ${store.name}</h3>
-      <p>${store.description}</p>
-      <p style="margin-top: 8px;"><strong>Shipping:</strong> ${store.shippingInfo}</p>
-      <p><strong>Returns:</strong> ${store.returnPolicy}</p>
+      <h3>Available at ${store.name}</h3>
+      <p>${store.twmMetaDescription || ''}</p>
+      <p style="margin-top: 8px;"><strong>Location:</strong> ${store.address2}, ${store.city}, ${store.stateShort}</p>
+      <p><strong>Phone:</strong> ${store.phoneFormatted}</p>
     </div>
     `
         : ''
@@ -688,6 +708,10 @@ function generateStoreDetailWidget(store: Store, products: Product[]): string {
   `
     )
     .join('');
+    
+    const storeImage = store.storeImages && store.storeImages.length > 0 
+    ? store.storeImages[0]!.url 
+    : 'https://via.placeholder.com/200x200?text=Store';
 
   return `
 <!DOCTYPE html>
@@ -723,60 +747,58 @@ function generateStoreDetailWidget(store: Store, products: Product[]): string {
 
     .store-header-content {
       display: grid;
-      grid-template-columns: 120px 1fr;
+      grid-template-columns: 200px 1fr;
       gap: 24px;
       align-items: start;
     }
 
     .store-logo-large {
-      width: 120px;
-      height: 120px;
+      width: 200px;
+      height: 200px;
       object-fit: cover;
       border-radius: 12px;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     }
 
     .store-main-info h1 {
       font-size: 32px;
       color: #111827;
-      margin-bottom: 12px;
+      margin-bottom: 8px;
     }
 
-    .store-rating-large {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 16px;
-    }
-
-    .stars-large {
-      color: #fbbf24;
-      font-size: 20px;
-    }
-
-    .rating-large {
-      font-size: 16px;
-      color: #111827;
-      font-weight: 600;
-    }
-
-    .review-count {
+    .store-number {
       font-size: 14px;
       color: #6b7280;
+      margin-bottom: 16px;
     }
 
     .store-description-full {
       font-size: 16px;
       color: #4b5563;
       line-height: 1.6;
-      margin-bottom: 24px;
+      margin-bottom: 16px;
+    }
+
+    .store-features {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .feature-badge {
+      padding: 4px 12px;
+      background: #dbeafe;
+      color: #1e40af;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 500;
     }
 
     .store-info-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
       gap: 20px;
-      margin-bottom: 24px;
+      margin-top: 24px;
     }
 
     .info-card {
@@ -797,37 +819,22 @@ function generateStoreDetailWidget(store: Store, products: Product[]): string {
     .info-card p {
       font-size: 15px;
       color: #111827;
+      margin-bottom: 4px;
     }
 
-    .store-categories-large {
+    .hours-list {
+      list-style: none;
+    }
+
+    .hours-list li {
       display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    .category-badge-large {
-      background: #dbeafe;
-      color: #1e40af;
-      padding: 6px 16px;
-      border-radius: 16px;
+      justify-content: space-between;
+      padding: 4px 0;
       font-size: 14px;
-      font-weight: 500;
     }
 
-    .visit-store-btn {
-      display: inline-block;
-      padding: 12px 32px;
-      background: #10b981;
-      color: white;
-      text-decoration: none;
-      border-radius: 8px;
-      font-weight: 600;
-      transition: background 0.2s;
-      margin-top: 16px;
-    }
-
-    .visit-store-btn:hover {
-      background: #059669;
+    .hours-list li.closed {
+      color: #ef4444;
     }
 
     .products-section {
@@ -839,8 +846,8 @@ function generateStoreDetailWidget(store: Store, products: Product[]): string {
 
     .products-section h2 {
       font-size: 24px;
-      color: #111827;
       margin-bottom: 24px;
+      color: #111827;
     }
 
     .store-products-grid {
@@ -850,46 +857,46 @@ function generateStoreDetailWidget(store: Store, products: Product[]): string {
     }
 
     .store-product-card {
-      background: #f9fafb;
-      border-radius: 12px;
-      overflow: hidden;
-      transition: transform 0.2s;
       border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 16px;
+      background: white;
+      transition: all 0.2s;
     }
 
     .store-product-card:hover {
-      transform: translateY(-4px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      transform: translateY(-2px);
     }
 
     .store-product-image {
       width: 100%;
-      height: 150px;
+      height: 180px;
       object-fit: cover;
-      background: #e5e7eb;
-    }
-
-    .store-product-info {
-      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 12px;
     }
 
     .store-product-info h4 {
       font-size: 14px;
-      color: #111827;
       margin-bottom: 8px;
-      line-height: 1.3;
+      color: #111827;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     .store-product-price {
       font-size: 18px;
       font-weight: 700;
       color: #059669;
-      margin-bottom: 6px;
+      margin-bottom: 8px;
     }
 
     .store-product-rating {
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 4px;
     }
 
     .stars-small {
@@ -908,6 +915,8 @@ function generateStoreDetailWidget(store: Store, products: Product[]): string {
       }
 
       .store-logo-large {
+        width: 150px;
+        height: 150px;
         margin: 0 auto;
       }
     }
@@ -917,42 +926,47 @@ function generateStoreDetailWidget(store: Store, products: Product[]): string {
   <div class="store-detail">
     <div class="store-header">
       <div class="store-header-content">
-        <img src="${store.logo}" alt="${store.name}" class="store-logo-large">
+        <img src="${storeImage}" alt="${store.name}" class="store-logo-large">
         <div class="store-main-info">
           <h1>${store.name}</h1>
-          <div class="store-rating-large">
-            <span class="stars-large">${'★'.repeat(Math.floor(store.rating))}${'☆'.repeat(5 - Math.floor(store.rating))}</span>
-            <span class="rating-large">${store.rating}</span>
-            <span class="review-count">(${store.reviews} reviews)</span>
+          <p class="store-number">Store #${store.storeNumber}</p>
+          <p class="store-description-full">${store.twmMetaDescription}</p>
+          <div class="store-features">
+            ${store.deliveryEligible ? '<span class="feature-badge">🚚 Delivery Available</span>' : ''}
+            ${store.curbsideAvailable ? '<span class="feature-badge">🚗 Curbside Pickup</span>' : ''}
+            ${store.wifiAvailable ? '<span class="feature-badge">📶 WiFi Available</span>' : ''}
+            ${store.humidor ? '<span class="feature-badge">🔥 Humidor</span>' : ''}
+            ${store.classroom ? '<span class="feature-badge">🎓 Classroom</span>' : ''}
           </div>
-          <p class="store-description-full">${store.description}</p>
-          <div class="store-categories-large">
-            ${store.categories.map(cat => `<span class="category-badge-large">${cat}</span>`).join('')}
-          </div>
-          <a href="${store.url}" target="_blank" class="visit-store-btn">Visit Store Website</a>
         </div>
       </div>
       <div class="store-info-grid">
         <div class="info-card">
           <h3>📍 Location</h3>
-          <p>${store.location}</p>
+          <p>${store.address2}</p>
+          <p>${store.city}, ${store.stateShort} ${store.zip}</p>
+          <p style="margin-top: 8px; color: #6b7280;">${store.formattedDistance}</p>
         </div>
         <div class="info-card">
           <h3>📞 Contact</h3>
-          <p>${store.phone}</p>
-          <p>${store.email}</p>
+          <p>${store.phoneFormatted}</p>
+          <p style="margin-top: 8px; font-size: 13px; color: #6b7280;">Customer Service:</p>
+          <p style="font-size: 13px;">${store.customerServicePhoneFormatted}</p>
         </div>
         <div class="info-card">
-          <h3>🕒 Hours</h3>
-          <p>${store.hours}</p>
+          <h3>🕒 Store Hours</h3>
+          <ul class="hours-list">
+            ${store.storeHours.days ? store.storeHours.days.map(day => `
+              <li class="${day.closedStatus ? 'closed' : ''}">
+                <span>${day.dayOfWeek.charAt(0) + day.dayOfWeek.slice(1).toLowerCase()}</span>
+                <span>${day.closedStatus ? 'Closed' : `${day.openingTime} - ${day.closingTime}`}</span>
+              </li>
+            `).join('') : '<li>Hours not available</li>'}
+          </ul>
         </div>
         <div class="info-card">
-          <h3>📦 Shipping</h3>
-          <p>${store.shippingInfo}</p>
-        </div>
-        <div class="info-card">
-          <h3>🔄 Returns</h3>
-          <p>${store.returnPolicy}</p>
+          <h3>🍷 Wine Tasting Hours</h3>
+          <p>${store.wineTastingHours.showHours ? 'Available' : 'Not available'}</p>
         </div>
       </div>
     </div>
@@ -1123,42 +1137,15 @@ server.setRequestHandler(ReadResourceRequestSchema, async request => {
           brand: '',
           specs: {},
         },
-        {
-          id: 0,
-          name: '',
-          logo: '',
-          url: '',
-          rating: 0,
-          reviews: 0,
-          description: '',
-          location: '',
-          phone: '',
-          email: '',
-          hours: '',
-          categories: [],
-          shippingInfo: '',
-          returnPolicy: '',
-        }
+        undefined
       );
       break;
     case 'store-detail':
+      if (mockStores.length === 0) {
+        throw new Error('No stores available for preview');
+      }
       html = generateStoreDetailWidget(
-        {
-          id: 0,
-          name: '',
-          logo: '',
-          url: '',
-          rating: 0,
-          reviews: 0,
-          description: '',
-          location: '',
-          phone: '',
-          email: '',
-          hours: '',
-          categories: [],
-          shippingInfo: '',
-          returnPolicy: '',
-        },
+        mockStores[0]!,
         []
       );
       break;
@@ -1210,7 +1197,7 @@ server.setRequestHandler(CallToolRequestSchema, async request => {
   if (toolName === 'search_stores') {
     const widget = widgetsById.get('store-search')!;
     const query = (request.params.arguments?.query as string) || '';
-    const stores = searchStores(query);
+    const result = searchStores(query);
 
     return {
       content: [
@@ -1219,18 +1206,7 @@ server.setRequestHandler(CallToolRequestSchema, async request => {
           text: widget.responseText,
         },
       ],
-      structuredContent: {
-        query,
-        stores: stores.map(s => ({
-          id: s.id,
-          name: s.name,
-          logo: s.logo,
-          rating: s.rating,
-          reviews: s.reviews,
-          location: s.location,
-          categories: s.categories,
-        })),
-      },
+      structuredContent: result,
       _meta: widgetInvocationMeta(widget),
     };
   }
@@ -1313,8 +1289,8 @@ server.setRequestHandler(CallToolRequestSchema, async request => {
       if (product.stockMessages) {
         detailedProduct.stockMessages = product.stockMessages;
       }
-      if (store?.id) {
-        detailedProduct.storeId = String(store.id);
+      if (store?.storeNumber) {
+        detailedProduct.storeNumber = store.storeNumber;
       }
       if (product.transactional !== undefined) {
         detailedProduct.transactional = product.transactional;
@@ -1386,21 +1362,7 @@ server.setRequestHandler(CallToolRequestSchema, async request => {
           },
         ],
         structuredContent: {
-          store: {
-            id: store.id,
-            name: store.name,
-            logo: store.logo,
-            rating: store.rating,
-            reviews: store.reviews,
-            description: store.description,
-            location: store.location,
-            phone: store.phone,
-            email: store.email,
-            hours: store.hours,
-            categories: store.categories,
-            shippingInfo: store.shippingInfo,
-            returnPolicy: store.returnPolicy,
-          },
+          store: store,
           products: products.map(p => ({
             id: p.id,
             name: p.name,

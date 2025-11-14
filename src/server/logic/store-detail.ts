@@ -7,30 +7,27 @@ import { mockProducts } from '../data/products.js';
 import type { StoreDetailResult } from '../types/index.js';
 
 /**
- * Get store details by ID
- * @param storeId - Store ID
+ * Get store details by store number
+ * @param storeNumber - Store number (e.g., "401", "402")
  * @returns Object containing store and products information
  * @throws Error if store not found
  */
-export function getStoreDetails(storeId: number | string | null | undefined): StoreDetailResult {
-  if (storeId === null || storeId === undefined) {
-    throw new Error('Store ID is required');
+export function getStoreDetails(storeNumber: number | string | null | undefined): StoreDetailResult {
+  if (storeNumber === null || storeNumber === undefined) {
+    throw new Error('Store number is required');
   }
 
-  const id = parseInt(String(storeId));
+  const storeNum = String(storeNumber);
 
-  if (isNaN(id)) {
-    throw new Error(`Invalid store ID: ${storeId}`);
-  }
-
-  const store = mockStores.find(s => s.id === id);
+  const store = mockStores.find(s => s.storeNumber === storeNum);
 
   if (!store) {
-    throw new Error(`Store with ID ${storeId} not found`);
+    throw new Error(`Store with number ${storeNumber} not found`);
   }
 
-  // Get products from this store
-  const storeProducts = mockProducts.filter(p => p.storeId === store.id);
+  // Get products from this store (using storeId field from products)
+  // For now, return all products since the product storeId doesn't map to storeNumber yet
+  const storeProducts = mockProducts;
 
   return { store, products: storeProducts };
 }
