@@ -38,15 +38,30 @@ Deploy your server to:
 
 ## Step 5: Connect to ChatGPT (2 minutes)
 
-### For ChatGPT Desktop App:
+### For ChatGPT Desktop App (Recommended - No ngrok needed!):
 
-1. Open ChatGPT
-2. Click your profile → Settings
-3. Go to "Developer" section
-4. Enable "Developer Mode"
-5. Add MCP Server:
-   - Name: Product Search
-   - Command: `node /path/to/your/project/src/server/product-search-server.js`
+**See [MCP_SETUP.md](MCP_SETUP.md) for detailed instructions.**
+
+Quick steps:
+1. Open ChatGPT → Settings → Developer
+2. Enable "Developer Mode"
+3. Edit MCP config and add:
+   ```json
+   {
+     "mcpServers": {
+       "product-search": {
+         "command": "node",
+         "args": ["/full/path/to/chatgpt-app-exampl/src/server/product-search-server.js"]
+       }
+     }
+   }
+   ```
+4. Save and restart ChatGPT
+
+**Config file locations:**
+- macOS: `~/Library/Application Support/ChatGPT/config.json`
+- Linux: `~/.config/ChatGPT/config.json`
+- Windows: `%APPDATA%\ChatGPT\config.json`
 
 ### For ChatGPT Web (using ngrok):
 

@@ -31,19 +31,29 @@ npm install
 
 ## Running the App
 
-### Step 1: Start the MCP Server
+### Option 1: Using ChatGPT Desktop App with Developer Mode (Recommended)
 
-Run the product search server:
+This is the easiest way to use the app locally without needing ngrok.
+
+**See [MCP_SETUP.md](MCP_SETUP.md) for complete step-by-step instructions.**
+
+Quick summary:
+1. Install dependencies: `npm install`
+2. Enable Developer Mode in ChatGPT Settings
+3. Add this MCP server to your ChatGPT config
+4. Restart ChatGPT and start searching!
+
+### Option 2: Using ngrok for Web Testing
+
+If you want to test with ChatGPT web or share your server publicly:
+
+**Step 1:** Run the product search server:
 
 ```bash
 npm run server:node
 ```
 
-The server will run on stdio and wait for MCP protocol messages.
-
-### Step 2: Expose with ngrok (for testing with ChatGPT)
-
-In a new terminal, expose your local server using ngrok:
+**Step 2:** In a new terminal, expose your local server using ngrok:
 
 ```bash
 ngrok http 4444
@@ -51,14 +61,14 @@ ngrok http 4444
 
 Note the public URL provided by ngrok (e.g., `https://abc123.ngrok.io`).
 
-### Step 3: Connect to ChatGPT
+**Step 3:** Connect to ChatGPT:
 
 1. Open ChatGPT and go to Settings
 2. Navigate to "Connectors" or "Custom Apps"
 3. Add a new connector with your ngrok URL
 4. Save the configuration
 
-### Step 4: Test in ChatGPT
+### Testing in ChatGPT
 
 Try these example prompts in ChatGPT:
 
@@ -67,16 +77,28 @@ Try these example prompts in ChatGPT:
 - "Show me keyboards"
 - "Search for wireless products"
 
+## Documentation
+
+- **[README.md](README.md)** - This file, complete project overview
+- **[MCP_SETUP.md](MCP_SETUP.md)** - Detailed MCP server setup for ChatGPT Developer Mode
+- **[QUICKSTART.md](QUICKSTART.md)** - Get started in 5 minutes
+- **[.env.example](.env.example)** - Environment variable template for API keys
+
 ## Project Structure
 
 ```
 chatgpt-app-exampl/
 ├── src/
 │   └── server/
-│       └── product-search-server.js  # MCP server with product search tool
-├── package.json                       # Project dependencies
+│       ├── product-search-server.js  # MCP server with product search tool
+│       ├── api-integrations.js       # Example API integrations (Amazon, eBay, etc.)
+│       └── config.js                 # Configuration settings
+├── package.json                      # Project dependencies
 ├── .gitignore                        # Git ignore rules
-└── README.md                         # This file
+├── .env.example                      # Environment variables template
+├── README.md                         # This file
+├── MCP_SETUP.md                      # MCP setup instructions
+└── QUICKSTART.md                     # Quick start guide
 ```
 
 ## How It Works
