@@ -5,8 +5,11 @@ A ChatGPT app built with the OpenAI Apps SDK that searches for products and disp
 ## Features
 
 - **Product Search**: Search for products using natural language queries
-- **Visual Results**: Displays products in a responsive grid with images
-- **Product Details**: Shows product name, description, price, and direct link
+- **Store Search**: Find stores by name, category, or type
+- **Product Details**: View detailed product information including specs, ratings, and availability
+- **Store Details**: Browse complete store information with all products, hours, and policies
+- **Visual Results**: Displays everything in responsive, beautiful layouts
+- **Rich Information**: Shows images, prices, ratings, reviews, and direct links
 - **Responsive Design**: Works great on desktop and mobile devices
 
 ## Prerequisites
@@ -72,10 +75,24 @@ Note the public URL provided by ngrok (e.g., `https://abc123.ngrok.io`).
 
 Try these example prompts in ChatGPT:
 
+**Product Search:**
 - "Search for headphones"
 - "Find me a laptop stand"
 - "Show me keyboards"
 - "Search for wireless products"
+
+**Store Search:**
+- "Search for stores"
+- "Find gaming stores"
+- "Show me electronics stores"
+
+**Product Details:**
+- "Get product detail for product ID 1"
+- "Show me details for product 4"
+
+**Store Details:**
+- "Get store details for store ID 1"
+- "Show me details about store 2"
 
 ## Documentation
 
@@ -105,10 +122,46 @@ chatgpt-app-exampl/
 
 This app uses the Model Context Protocol (MCP) to integrate with ChatGPT:
 
-1. **MCP Server**: The server exposes a `search_products` tool that ChatGPT can call
-2. **Product Search**: When called, it searches a product database (currently mock data)
-3. **UI Widget**: Results are rendered as an HTML widget with embedded CSS
-4. **Display**: ChatGPT displays the interactive product grid inline with the conversation
+1. **MCP Server**: The server exposes multiple tools that ChatGPT can call
+2. **Data Search**: Tools search product and store databases (currently mock data)
+3. **UI Widgets**: Results are rendered as HTML widgets with embedded CSS
+4. **Display**: ChatGPT displays the interactive interfaces inline with the conversation
+
+## Available Tools
+
+The MCP server provides four tools:
+
+### 1. search_products
+Search for products and display results with images, prices, and links.
+
+**Parameters:**
+- `query` (string, required): Search query for products
+
+**Example:** "Search for headphones"
+
+### 2. search_stores
+Search for stores and display their information including location, hours, and contact details.
+
+**Parameters:**
+- `query` (string, optional): Search query for stores
+
+**Example:** "Find gaming stores" or "Search for stores"
+
+### 3. get_product_detail
+Get detailed information about a specific product including specs, ratings, and availability.
+
+**Parameters:**
+- `product_id` (number, required): Product ID (1-8)
+
+**Example:** "Get product detail for product ID 1"
+
+### 4. get_store_details
+Get detailed information about a specific store including all products and policies.
+
+**Parameters:**
+- `store_id` (number, required): Store ID (1-3)
+
+**Example:** "Get store details for store ID 2"
 
 ## Customization
 
