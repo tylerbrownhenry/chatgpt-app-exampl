@@ -20,111 +20,191 @@ A ChatGPT app built with the OpenAI Apps SDK and TypeScript that searches for pr
 - ChatGPT account with Developer Mode enabled
 - ngrok (for local testing with ChatGPT)
 
-## Installation
+## Quick Start
 
-1. Clone this repository:
+Get started in 5 minutes:
+
 ```bash
+# 1. Clone and install
 git clone <your-repo-url>
 cd chatgpt-app-exampl
-```
-
-2. Install dependencies:
-```bash
 npm install
-```
 
-3. Build the TypeScript code:
-```bash
+# 2. Build the project
 npm run build
+
+# 3. Test with MCP Inspector (optional)
+npx @modelcontextprotocol/inspector node dist/server/product-search-server.js
+# Opens at http://127.0.0.1:6274
+
+# 4. Configure in your AI client (see below)
 ```
 
-## Code Quality
+## Code Quality & Testing
 
-This project uses several tools to maintain high code quality:
+This project includes comprehensive tooling for code quality:
 
-### Linting and Formatting
+**Linting and Formatting:**
 ```bash
-# Run ESLint
-npm run lint
-
-# Auto-fix linting issues
-npm run lint:fix
-
-# Format code with Prettier
-npm run format
-
-# Check formatting
-npm run format:check
+npm run lint              # Run ESLint
+npm run lint:fix          # Auto-fix linting issues
+npm run format            # Format code with Prettier
+npm run format:check      # Check formatting
 ```
 
-### Type Checking
+**Type Checking:**
 ```bash
-# Type check without building
-npm run typecheck
+npm run typecheck         # Type check without building
 ```
 
-### Testing
+**Testing:**
 ```bash
-# Run all tests
-npm test
-
-# Watch mode
-npm run test:watch
-
-# Coverage report
-npm run test:coverage
+npm test                  # Run all tests
+npm run test:watch        # Watch mode
+npm run test:coverage     # Coverage report
 ```
 
-### Combined Quality Check
+**Combined Quality Check:**
 ```bash
-# Run all quality checks
 npm run lint:check && npm run format:check && npm run typecheck && npm test
 ```
 
-See **[LINTING.md](LINTING.md)** for detailed information about code quality tools.
-
 ## Running the App
 
-### Option 1: Using ChatGPT Desktop App with Developer Mode (Recommended)
+### Option 1: Using with VS Code / GitHub Copilot Chat (Recommended)
 
-This is the easiest way to use the app locally without needing ngrok.
+This MCP server can be integrated with VS Code and GitHub Copilot Chat.
 
-**See [MCP_SETUP.md](MCP_SETUP.md) for complete step-by-step instructions.**
+**Setup:**
 
-Quick summary:
-1. Install dependencies: `npm install`
-2. Enable Developer Mode in ChatGPT Settings
-3. Add this MCP server to your ChatGPT config
-4. Restart ChatGPT and start searching!
+1. **Build the project:**
+   ```bash
+   npm install
+   npm run build
+   ```
 
-### Option 2: Using ngrok for Web Testing
+2. **Find your Node.js path:**
+   ```bash
+   which node  # macOS/Linux
+   where node  # Windows
+   ```
 
-If you want to test with ChatGPT web or share your server publicly:
+3. **Configure MCP in VS Code:**
+   
+   Edit `~/Library/Application Support/Code/User/mcp.json` (macOS) or `%APPDATA%\Code\User\mcp.json` (Windows):
+   
+   ```json
+   {
+     "servers": {
+       "product-search": {
+         "type": "stdio",
+         "command": "/full/path/to/node",
+         "args": [
+           "/full/path/to/chatgpt-app-exampl/dist/server/product-search-server.js"
+         ]
+       }
+     }
+   }
+   ```
+   
+   Replace paths with your actual paths from steps above.
 
-**Step 1:** Run the product search server:
+4. **Restart VS Code** - The server will be available through Copilot Chat!
+
+### Option 2: Using with ChatGPT Desktop App
+
+**Setup:**
+
+1. **Build the project** (same as above)
+
+2. **Enable Developer Mode:**
+   - Open ChatGPT Desktop App
+   - Click your profile picture → Settings
+   - Navigate to "Developer" tab
+   - Toggle "Developer Mode" to ON
+
+3. **Configure MCP Server:**
+   
+   Edit ChatGPT's MCP config file:
+   - **macOS**: `~/Library/Application Support/ChatGPT/config.json`
+   - **Windows**: `%APPDATA%\ChatGPT\config.json`
+   - **Linux**: `~/.config/ChatGPT/config.json`
+   
+   Add this configuration:
+   ```json
+   {
+     "mcpServers": {
+       "product-search": {
+         "command": "node",
+         "args": [
+           "/full/path/to/chatgpt-app-exampl/dist/server/product-search-server.js"
+         ]
+       }
+     }
+   }
+   ```
+
+4. **Restart ChatGPT** and start using the tools!
+
+### Option 3: Using with Claude Desktop App
+
+**Setup:**
+
+1. **Build the project** (same as above)
+
+2. **Configure MCP Server:**
+   
+   Edit Claude's MCP config file:
+   - **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
+   - **Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
+   
+   Add this configuration:
+   ```json
+   {
+     "mcpServers": {
+       "product-search": {
+         "command": "node",
+         "args": [
+           "/full/path/to/chatgpt-app-exampl/dist/server/product-search-server.js"
+         ]
+       }
+     }
+   }
+   ```
+
+3. **Restart Claude** and start using the tools!
+
+### Option 4: Using the MCP Inspector
+
+Test and debug your server with the official MCP Inspector:
 
 ```bash
-npm run server:node
+# Build first
+npm run build
+
+# Start inspector
+npx @modelcontextprotocol/inspector node dist/server/product-search-server.js
 ```
 
-**Step 2:** In a new terminal, expose your local server using ngrok:
+The inspector will open at `http://127.0.0.1:6274` where you can:
+- View all available tools
+- Test tools interactively
+- View requests/responses in real-time
+- Debug the server
+
+### Option 5: Development Mode
+
+For development with auto-reload:
 
 ```bash
-ngrok http 4444
+npm run server:dev
 ```
 
-Note the public URL provided by ngrok (e.g., `https://abc123.ngrok.io`).
+This uses `tsx` to run TypeScript directly without building.
 
-**Step 3:** Connect to ChatGPT:
+## Usage Examples
 
-1. Open ChatGPT and go to Settings
-2. Navigate to "Connectors" or "Custom Apps"
-3. Add a new connector with your ngrok URL
-4. Save the configuration
-
-### Testing in ChatGPT
-
-Try these example prompts in ChatGPT:
+Try these example prompts in your AI chat client:
 
 **Product Search:**
 - "Search for headphones"
@@ -145,16 +225,40 @@ Try these example prompts in ChatGPT:
 - "Get store details for store ID 1"
 - "Show me details about store 2"
 
-## Documentation
+## Architecture
 
-- **[README.md](README.md)** - This file, complete project overview
-- **[TYPESCRIPT.md](TYPESCRIPT.md)** - TypeScript migration guide and benefits
-- **[LINTING.md](LINTING.md)** - ESLint and Prettier setup guide
-- **[MCP_SETUP.md](MCP_SETUP.md)** - Detailed MCP server setup for ChatGPT Developer Mode
-- **[QUICKSTART.md](QUICKSTART.md)** - Get started in 5 minutes
-- **[TESTING.md](TESTING.md)** - Testing guide with Jest
-- **[ARCHITECTURE.md](ARCHITECTURE.md)** - Architecture documentation
-- **[.env.example](.env.example)** - Environment variable template for API keys
+This app follows a clean, modular architecture with clear separation of concerns:
+
+### Layers
+
+1. **Data Layer** (`src/server/data/`) - Centralized data sources (currently mock data)
+2. **Logic Layer** (`src/server/logic/`) - Pure business logic functions
+3. **Server Layer** (`src/server/product-search-server.js`) - MCP protocol implementation
+
+### Key Principles
+
+- **Separation of Concerns**: Each layer has specific responsibilities
+- **Testability**: Pure functions with clear input/output contracts
+- **Modularity**: Easy to add, modify, or remove features
+- **Reusability**: Logic can be used independently of the MCP server
+
+### Data Flow
+
+```
+AI Chat Client (ChatGPT/Claude)
+        ↓
+MCP Server (product-search-server.js)
+        ↓
+Logic Layer (searches, filters, transforms)
+        ↓
+Data Layer (products, stores)
+        ↓
+Widget Generator (HTML with embedded CSS)
+        ↓
+Response to AI Client
+```
+
+**See [ARCHITECTURE.md](ARCHITECTURE.md) for detailed architecture documentation.**
 
 ## Project Structure
 
@@ -162,25 +266,68 @@ Try these example prompts in ChatGPT:
 chatgpt-app-exampl/
 ├── src/
 │   └── server/
-│       ├── product-search-server.js  # MCP server with product search tool
-│       ├── api-integrations.js       # Example API integrations (Amazon, eBay, etc.)
-│       └── config.js                 # Configuration settings
-├── package.json                      # Project dependencies
-├── .gitignore                        # Git ignore rules
-├── .env.example                      # Environment variables template
-├── README.md                         # This file
-├── MCP_SETUP.md                      # MCP setup instructions
-└── QUICKSTART.md                     # Quick start guide
+│       ├── data/                        # Data layer (mock data)
+│       │   ├── products.js
+│       │   └── stores.js
+│       ├── logic/                       # Business logic
+│       │   ├── product-search.js
+│       │   ├── store-search.js
+│       │   ├── product-detail.js
+│       │   └── store-detail.js
+│       ├── product-search-server.ts     # Main MCP server
+│       └── config.js                    # Configuration
+├── __tests__/                           # Jest tests
+├── dist/                                # Compiled JavaScript
+├── package.json                         # Dependencies
+└── README.md                            # This file
 ```
 
 ## How It Works
 
-This app uses the Model Context Protocol (MCP) to integrate with ChatGPT:
+This app uses the **Model Context Protocol (MCP)** to integrate with AI chat clients:
 
-1. **MCP Server**: The server exposes multiple tools that ChatGPT can call
-2. **Data Search**: Tools search product and store databases (currently mock data)
-3. **UI Widgets**: Results are rendered as HTML widgets with embedded CSS
-4. **Display**: ChatGPT displays the interactive interfaces inline with the conversation
+1. **MCP Server**: Exposes tools that AI clients can discover and call
+2. **Tool Invocation**: AI client calls tools based on user queries
+3. **Data Processing**: Server searches databases and processes results
+4. **Widget Generation**: Results are formatted as interactive HTML widgets with embedded CSS
+5. **Display**: AI client renders the widgets inline with the conversation
+
+### What is MCP?
+
+The Model Context Protocol is an open protocol that enables AI assistants to securely connect to data sources and tools. It provides:
+
+- **Standardized communication** between AI systems and external tools
+- **Dynamic tool discovery** - clients can discover available tools at runtime
+- **Type-safe interfaces** - tools define schemas for their inputs and outputs
+- **Multiple transports** - supports stdio, HTTP, and more
+
+### MCP Architecture
+
+```
+┌─────────────────┐
+│   AI Client     │  (ChatGPT, Claude, etc.)
+│  (MCP Client)   │
+└────────┬────────┘
+         │ MCP Protocol
+         │ (JSON-RPC)
+┌────────▼────────┐
+│   MCP Server    │  (This app)
+│                 │
+│  ┌───────────┐  │
+│  │   Tools   │  │  - search_products
+│  └───────────┘  │  - search_stores
+│                 │  - get_product_detail
+│  ┌───────────┐  │  - get_store_details
+│  │  Logic    │  │
+│  └───────────┘  │
+│                 │
+│  ┌───────────┐  │
+│  │   Data    │  │
+│  └───────────┘  │
+└─────────────────┘
+```
+
+Learn more: [Model Context Protocol Documentation](https://modelcontextprotocol.io/)
 
 ## Available Tools
 
@@ -255,47 +402,44 @@ The product cards are styled with inline CSS in the `generateProductWidget` func
 
 ### Mock Data
 
-The app currently uses mock product data defined in `mockProducts`. This includes:
+The app currently uses mock data in `src/server/data/`:
+- `products.js` - Electronics and accessories
+- `stores.js` - Store information
 
-- Electronics (headphones, keyboards, webcams)
-- Accessories (stands, hubs, chargers)
-- Sample images from Unsplash
+To connect to a real API, modify the logic functions in `src/server/logic/`.
 
-### Adding More Tools
+### Adding New Tools
 
-To add additional tools, add them to the `ListToolsRequestSchema` handler and implement their logic in the `CallToolRequestSchema` handler.
+1. Add data to `src/server/data/` (if needed)
+2. Create logic function in `src/server/logic/`
+3. Add tool definition and handler in `product-search-server.ts`
+4. Create tests in `__tests__/`
 
 ## Troubleshooting
 
 **Server not connecting:**
 - Ensure you're running Node.js 18+
-- Check that all dependencies are installed
-- Verify the MCP SDK is properly installed
+- Run `npm install` to install dependencies
+- Run `npm run build` to compile TypeScript
+- Check your MCP config file has correct absolute paths
 
-**ChatGPT can't reach the server:**
-- Confirm ngrok is running and the URL is correct
-- Check that your connector configuration matches the ngrok URL
-- Ensure your firewall allows ngrok connections
+**AI client can't find tools:**
+- Verify the server path in your MCP config is correct
+- Use absolute paths, not relative paths
+- Restart your AI client after config changes
+- Check the server is actually running (use MCP Inspector to test)
 
-**Products not displaying:**
-- Check the browser console for errors
-- Verify the HTML widget is being generated correctly
-- Ensure image URLs are accessible
+**Tools not working:**
+- Open MCP Inspector to test tools directly
+- Check server logs for errors
+- Verify mock data is loading correctly
 
 ## Resources
 
-- [OpenAI Apps SDK Documentation](https://developers.openai.com/apps-sdk/)
-- [Model Context Protocol](https://modelcontextprotocol.io/)
-- [Apps SDK Examples](https://github.com/openai/openai-apps-sdk-examples)
+- [Model Context Protocol Documentation](https://modelcontextprotocol.io/)
+- [MCP Specification](https://spec.modelcontextprotocol.io/)
+- [MCP TypeScript SDK](https://github.com/modelcontextprotocol/typescript-sdk)
 
 ## License
 
 MIT
-
-## Next Steps
-
-- [ ] Integrate with a real product API
-- [ ] Add filtering options (price range, category)
-- [ ] Implement product comparison
-- [ ] Add user reviews/ratings
-- [ ] Support multiple languages

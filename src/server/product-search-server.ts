@@ -5,12 +5,92 @@ import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
+  ListResourcesRequestSchema,
+  ListResourceTemplatesRequestSchema,
+  ReadResourceRequestSchema,
+  type Resource,
+  type ResourceTemplate,
+  type Tool,
 } from '@modelcontextprotocol/sdk/types.js';
 import { searchProducts } from './logic/product-search.js';
 import { searchStores } from './logic/store-search.js';
 import { getProductDetail } from './logic/product-detail.js';
 import { getStoreDetails } from './logic/store-detail.js';
 import type { Product, Store } from './types/index.js';
+
+/**
+ * Widget definitions following OpenAI Apps SDK pattern
+ */
+type ProductWidget = {
+  id: string;
+  title: string;
+  templateUri: string;
+  invoking: string;
+  invoked: string;
+  responseText: string;
+};
+
+const widgets: ProductWidget[] = [
+  {
+    id: 'product-search',
+    title: 'Product Search Results',
+    templateUri: 'ui://widget/product-search.html',
+    invoking: 'Searching products...',
+    invoked: 'Products loaded',
+    responseText: 'Product search complete',
+  },
+  {
+    id: 'store-search',
+    title: 'Store Search Results',
+    templateUri: 'ui://widget/store-search.html',
+    invoking: 'Searching stores...',
+    invoked: 'Stores loaded',
+    responseText: 'Store search complete',
+  },
+  {
+    id: 'product-detail',
+    title: 'Product Details',
+    templateUri: 'ui://widget/product-detail.html',
+    invoking: 'Loading product details...',
+    invoked: 'Product details loaded',
+    responseText: 'Product details ready',
+  },
+  {
+    id: 'store-detail',
+    title: 'Store Details',
+    templateUri: 'ui://widget/store-detail.html',
+    invoking: 'Loading store details...',
+    invoked: 'Store details loaded',
+    responseText: 'Store details ready',
+  },
+];
+
+const widgetsById = new Map<string, ProductWidget>(
+  widgets.map(w => [w.id, w])
+);
+const widgetsByUri = new Map<string, ProductWidget>(
+  widgets.map(w => [w.templateUri, w])
+);
+
+/**
+ * Widget metadata helpers
+ */
+function widgetDescriptorMeta(widget: ProductWidget) {
+  return {
+    'openai/outputTemplate': widget.templateUri,
+    'openai/toolInvocation/invoking': widget.invoking,
+    'openai/toolInvocation/invoked': widget.invoked,
+    'openai/widgetAccessible': true,
+    'openai/resultCanProduceWidget': true,
+  } as const;
+}
+
+function widgetInvocationMeta(widget: ProductWidget) {
+  return {
+    'openai/toolInvocation/invoking': widget.invoking,
+    'openai/toolInvocation/invoked': widget.invoked,
+  } as const;
+}
 
 /**
  * Generate HTML widget for displaying products
@@ -897,140 +977,382 @@ const server = new Server(
   },
   {
     capabilities: {
+      resources: {},
       tools: {},
     },
   }
 );
 
-// Handle tool listing
-server.setRequestHandler(ListToolsRequestSchema, async () => {
+/**
+ * Tool definitions
+ */
+const tools: Tool[] = [
+  {
+    name: 'search_products',
+    title: 'Search Products',
+    description: 'Search for products and display results with images, prices, and links. Returns paginated results with facets and sorting options.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        query: {
+          type: 'string',
+          description: 'Search query for products',
+        },
+        page: {
+          type: 'number',
+          description: 'Page number for pagination (default: 1)',
+        },
+        page_size: {
+          type: 'number',
+          description: 'Number of results per page (default: 16)',
+        },
+      },
+      required: ['query'],
+    },
+    _meta: widgetDescriptorMeta(widgetsById.get('product-search')!),
+  },
+  {
+    name: 'search_stores',
+    title: 'Search Stores',
+    description: 'Search for stores and display their information',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        query: {
+          type: 'string',
+          description: 'Search query for stores',
+        },
+      },
+      required: [],
+    },
+    _meta: widgetDescriptorMeta(widgetsById.get('store-search')!),
+  },
+  {
+    name: 'get_product_detail',
+    title: 'Get Product Details',
+    description: 'Get detailed information about a specific product',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        product_id: {
+          type: 'number',
+          description: 'The ID of the product',
+        },
+      },
+      required: ['product_id'],
+    },
+    _meta: widgetDescriptorMeta(widgetsById.get('product-detail')!),
+  },
+  {
+    name: 'get_store_details',
+    title: 'Get Store Details',
+    description: 'Get detailed information about a specific store',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        store_id: {
+          type: 'number',
+          description: 'The ID of the store',
+        },
+      },
+      required: ['store_id'],
+    },
+    _meta: widgetDescriptorMeta(widgetsById.get('store-detail')!),
+  },
+];
+
+/**
+ * Resource definitions
+ */
+const resources: Resource[] = widgets.map(widget => ({
+  uri: widget.templateUri,
+  name: widget.title,
+  description: `${widget.title} widget markup`,
+  mimeType: 'text/html',
+  _meta: widgetDescriptorMeta(widget),
+}));
+
+const resourceTemplates: ResourceTemplate[] = widgets.map(widget => ({
+  uriTemplate: widget.templateUri,
+  name: widget.title,
+  description: `${widget.title} widget markup`,
+  mimeType: 'text/html',
+  _meta: widgetDescriptorMeta(widget),
+}));
+
+// Handle resource listing
+server.setRequestHandler(ListResourcesRequestSchema, async () => ({
+  resources,
+}));
+
+// Handle resource template listing
+server.setRequestHandler(ListResourceTemplatesRequestSchema, async () => ({
+  resourceTemplates,
+}));
+
+// Handle resource reading
+server.setRequestHandler(ReadResourceRequestSchema, async request => {
+  const widget = widgetsByUri.get(request.params.uri);
+  if (!widget) {
+    throw new Error(`Unknown resource: ${request.params.uri}`);
+  }
+
+  // Generate HTML based on widget type
+  let html: string;
+  switch (widget.id) {
+    case 'product-search':
+      html = generateProductWidget([]);
+      break;
+    case 'store-search':
+      html = generateStoresWidget([]);
+      break;
+    case 'product-detail':
+      html = generateProductDetailWidget(
+        {
+          id: 0,
+          storeId: 0,
+          name: '',
+          price: 0,
+          image: '',
+          url: '',
+          description: '',
+          rating: 0,
+          reviews: 0,
+          inStock: true,
+          category: '',
+          brand: '',
+          specs: {},
+        },
+        {
+          id: 0,
+          name: '',
+          logo: '',
+          url: '',
+          rating: 0,
+          reviews: 0,
+          description: '',
+          location: '',
+          phone: '',
+          email: '',
+          hours: '',
+          categories: [],
+          shippingInfo: '',
+          returnPolicy: '',
+        }
+      );
+      break;
+    case 'store-detail':
+      html = generateStoreDetailWidget(
+        {
+          id: 0,
+          name: '',
+          logo: '',
+          url: '',
+          rating: 0,
+          reviews: 0,
+          description: '',
+          location: '',
+          phone: '',
+          email: '',
+          hours: '',
+          categories: [],
+          shippingInfo: '',
+          returnPolicy: '',
+        },
+        []
+      );
+      break;
+    default:
+      throw new Error(`Unknown widget: ${widget.id}`);
+  }
+
   return {
-    tools: [
+    contents: [
       {
-        name: 'search_products',
-        description:
-          'Search for products and display results with images, prices, and links. Returns a visual grid of products matching the search query.',
-        inputSchema: {
-          type: 'object',
-          properties: {
-            query: {
-              type: 'string',
-              description: 'Search query for products (e.g., "headphones", "laptop", "keyboard")',
-            },
-          },
-          required: ['query'],
-        },
-      },
-      {
-        name: 'search_stores',
-        description:
-          'Search for stores and display their information including location, hours, contact details, and categories. Returns a visual grid of stores.',
-        inputSchema: {
-          type: 'object',
-          properties: {
-            query: {
-              type: 'string',
-              description:
-                'Search query for stores (e.g., "gaming", "electronics", "tech") or leave empty to show all stores',
-            },
-          },
-          required: [],
-        },
-      },
-      {
-        name: 'get_product_detail',
-        description:
-          'Get detailed information about a specific product including specifications, ratings, availability, and store information. Returns a detailed product page.',
-        inputSchema: {
-          type: 'object',
-          properties: {
-            product_id: {
-              type: 'number',
-              description: 'The ID of the product to get details for (1-8)',
-            },
-          },
-          required: ['product_id'],
-        },
-      },
-      {
-        name: 'get_store_details',
-        description:
-          'Get detailed information about a specific store including all products, contact information, hours, and policies. Returns a detailed store page.',
-        inputSchema: {
-          type: 'object',
-          properties: {
-            store_id: {
-              type: 'number',
-              description: 'The ID of the store to get details for (1-3)',
-            },
-          },
-          required: ['store_id'],
-        },
+        uri: widget.templateUri,
+        mimeType: 'text/html',
+        text: html,
+        _meta: widgetDescriptorMeta(widget),
       },
     ],
   };
 });
 
+// Handle tool listing
+server.setRequestHandler(ListToolsRequestSchema, async () => ({
+  tools,
+}));
+
 // Handle tool execution
 server.setRequestHandler(CallToolRequestSchema, async request => {
-  if (request.params.name === 'search_products') {
+  const toolName = request.params.name;
+
+  if (toolName === 'search_products') {
+    const widget = widgetsById.get('product-search')!;
     const query = (request.params.arguments?.query as string) || '';
-    const products = searchProducts(query);
-    const widget = generateProductWidget(products);
+    const page = (request.params.arguments?.page as number) || 1;
+    const pageSize = (request.params.arguments?.page_size as number) || 16;
+    
+    const searchResult = searchProducts(query, page, pageSize);
 
     return {
       content: [
         {
           type: 'text',
-          text: `Found ${products.length} product(s) matching "${query}":`,
+          text: widget.responseText,
         },
       ],
-      _meta: {
-        'openai/outputTemplate': widget,
-      },
+      structuredContent: searchResult,
+      _meta: widgetInvocationMeta(widget),
     };
   }
 
-  if (request.params.name === 'search_stores') {
+  if (toolName === 'search_stores') {
+    const widget = widgetsById.get('store-search')!;
     const query = (request.params.arguments?.query as string) || '';
     const stores = searchStores(query);
-    const widget = generateStoresWidget(stores);
 
     return {
       content: [
         {
           type: 'text',
-          text: query
-            ? `Found ${stores.length} store(s) matching "${query}":`
-            : `Showing ${stores.length} available store(s):`,
+          text: widget.responseText,
         },
       ],
-      _meta: {
-        'openai/outputTemplate': widget,
+      structuredContent: {
+        query,
+        stores: stores.map(s => ({
+          id: s.id,
+          name: s.name,
+          logo: s.logo,
+          rating: s.rating,
+          reviews: s.reviews,
+          location: s.location,
+          categories: s.categories,
+        })),
       },
+      _meta: widgetInvocationMeta(widget),
     };
   }
 
-  if (request.params.name === 'get_product_detail') {
+  if (toolName === 'get_product_detail') {
+    const widget = widgetsById.get('product-detail')!;
     const productId = request.params.arguments?.product_id as number | undefined;
+    
     if (!productId) {
       throw new Error('product_id is required');
     }
 
     try {
       const { product, store } = getProductDetail(productId);
-      const widget = generateProductDetailWidget(product, store);
+
+      // Build comprehensive response matching Total Wine API structure
+      const detailedProduct: any = {
+        id: String(product.id),
+        name: product.name,
+        description: product.description,
+        price: product.price,
+        image: product.image,
+        rating: product.rating,
+        customerReviewsCount: product.reviews,
+        inStock: product.inStock,
+        brand: product.brand,
+        category: product.category,
+        specs: product.specs,
+      };
+
+      // Add extended fields if available
+      if (product.brand_info) {
+        detailedProduct.brand = product.brand_info;
+      }
+      if (product.categories) {
+        detailedProduct.categories = product.categories;
+      }
+      if (product.customerAverageRating !== undefined) {
+        detailedProduct.customerAverageRating = product.customerAverageRating;
+      }
+      if (product.images) {
+        detailedProduct.images = product.images;
+      }
+      if (product.location) {
+        detailedProduct.location = product.location;
+      }
+      if (product.bay) {
+        detailedProduct.bay = product.bay;
+      }
+      if (product.metaDescription) {
+        detailedProduct.metaDescription = product.metaDescription;
+      }
+      if (product.productPageTitle) {
+        detailedProduct.productPageTitle = product.productPageTitle;
+      }
+      if (product.productUrl) {
+        detailedProduct.productUrl = product.productUrl;
+      }
+      if (product.canonicalUrl) {
+        detailedProduct.canonicalUrl = product.canonicalUrl;
+      }
+      if (product.packageDescription) {
+        detailedProduct.packageDescription = product.packageDescription;
+      }
+      if (product.priceInfo) {
+        detailedProduct.price = product.priceInfo;
+      }
+      if (product.review) {
+        detailedProduct.review = product.review;
+      }
+      if (product.shoppingOptions) {
+        detailedProduct.shoppingOptions = product.shoppingOptions;
+      }
+      if (product.skuId) {
+        detailedProduct.skuId = product.skuId;
+      }
+      if (product.stockLevel) {
+        detailedProduct.stockLevel = product.stockLevel;
+      }
+      if (product.stockMessages) {
+        detailedProduct.stockMessages = product.stockMessages;
+      }
+      if (store?.id) {
+        detailedProduct.storeId = String(store.id);
+      }
+      if (product.transactional !== undefined) {
+        detailedProduct.transactional = product.transactional;
+      }
+      if (product.salesStrategy) {
+        detailedProduct.salesStrategy = product.salesStrategy;
+      }
+      if (product.department) {
+        detailedProduct.department = product.department;
+      }
+      if (product.directType) {
+        detailedProduct.directType = product.directType;
+      }
+      if (product.itemCharacteristics) {
+        detailedProduct.itemCharacteristics = product.itemCharacteristics;
+      }
+      if (product.skus) {
+        detailedProduct.skus = product.skus;
+      }
+      if (product.breadCrumbs) {
+        detailedProduct.breadCrumbs = product.breadCrumbs;
+      }
+      if (product.packageValue) {
+        detailedProduct.packageValue = product.packageValue;
+      }
+      if (product.alcoholPercentage !== undefined) {
+        detailedProduct.alcoholPercentage = product.alcoholPercentage;
+      }
 
       return {
         content: [
           {
             type: 'text',
-            text: `Product Details: ${product.name} - $${product.price.toFixed(2)}`,
+            text: widget.responseText,
           },
         ],
-        _meta: {
-          'openai/outputTemplate': widget,
-        },
+        structuredContent: detailedProduct,
+        _meta: widgetInvocationMeta(widget),
       };
     } catch (error) {
       return {
@@ -1040,30 +1362,55 @@ server.setRequestHandler(CallToolRequestSchema, async request => {
             text: error instanceof Error ? error.message : 'Unknown error occurred',
           },
         ],
+        isError: true,
       };
     }
   }
 
-  if (request.params.name === 'get_store_details') {
+  if (toolName === 'get_store_details') {
+    const widget = widgetsById.get('store-detail')!;
     const storeId = request.params.arguments?.store_id as number | undefined;
+    
     if (!storeId) {
       throw new Error('store_id is required');
     }
 
     try {
       const { store, products } = getStoreDetails(storeId);
-      const widget = generateStoreDetailWidget(store, products);
 
       return {
         content: [
           {
             type: 'text',
-            text: `Store Details: ${store.name} - ${products.length} products available`,
+            text: widget.responseText,
           },
         ],
-        _meta: {
-          'openai/outputTemplate': widget,
+        structuredContent: {
+          store: {
+            id: store.id,
+            name: store.name,
+            logo: store.logo,
+            rating: store.rating,
+            reviews: store.reviews,
+            description: store.description,
+            location: store.location,
+            phone: store.phone,
+            email: store.email,
+            hours: store.hours,
+            categories: store.categories,
+            shippingInfo: store.shippingInfo,
+            returnPolicy: store.returnPolicy,
+          },
+          products: products.map(p => ({
+            id: p.id,
+            name: p.name,
+            price: p.price,
+            image: p.image,
+            rating: p.rating,
+            inStock: p.inStock,
+          })),
         },
+        _meta: widgetInvocationMeta(widget),
       };
     } catch (error) {
       return {
@@ -1073,11 +1420,12 @@ server.setRequestHandler(CallToolRequestSchema, async request => {
             text: error instanceof Error ? error.message : 'Unknown error occurred',
           },
         ],
+        isError: true,
       };
     }
   }
 
-  throw new Error(`Unknown tool: ${request.params.name}`);
+  throw new Error(`Unknown tool: ${toolName}`);
 });
 
 // Start the server
